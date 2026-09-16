@@ -1,5 +1,5 @@
 import XCTest
-@testable import KeyboardSwitcherCore
+@testable import ShiftHappensCore
 
 // MARK: - Mocks
 

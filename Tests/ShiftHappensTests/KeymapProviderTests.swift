@@ -1,5 +1,5 @@
 import XCTest
-@testable import KeyboardSwitcherCore
+@testable import ShiftHappensCore
 
 /// Smoke test for the UCKeyTranslate extraction path — runs on a real Mac with real layouts.
 final class KeymapProviderTests: XCTestCase {

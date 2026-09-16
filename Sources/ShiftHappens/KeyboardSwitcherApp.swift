@@ -1,16 +1,16 @@
 import SwiftUI
-import KeyboardSwitcherCore
+import ShiftHappensCore
 
 @main
-struct KeyboardSwitcherApp: App {
+struct ShiftHappensApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("Keyboard Switcher", systemImage: "keyboard") {
+        MenuBarExtra("Shift Happens", systemImage: "keyboard") {
             Button("Settings…") { appDelegate.showSettings() }
-            Button("About Keyboard Switcher") { appDelegate.showAbout() }
+            Button("About Shift Happens") { appDelegate.showAbout() }
             Divider()
-            Button("Quit Keyboard Switcher") { NSApp.terminate(nil) }
+            Button("Quit Shift Happens") { NSApp.terminate(nil) }
         }
         .menuBarExtraStyle(.menu)
     }

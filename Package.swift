@@ -2,19 +2,19 @@
 import PackageDescription
 
 let package = Package(
-    name: "keyboard-switcher",
+    name: "shift-happens",
     platforms: [.macOS(.v14)],
     targets: [
-        .target(name: "KeyboardSwitcherCore", path: "Sources/KeyboardSwitcherCore"),
+        .target(name: "ShiftHappensCore", path: "Sources/ShiftHappensCore"),
         .executableTarget(
-            name: "KeyboardSwitcher",
-            dependencies: ["KeyboardSwitcherCore"],
-            path: "Sources/KeyboardSwitcher"
+            name: "ShiftHappens",
+            dependencies: ["ShiftHappensCore"],
+            path: "Sources/ShiftHappens"
         ),
         .testTarget(
-            name: "KeyboardSwitcherTests",
-            dependencies: ["KeyboardSwitcherCore"],
-            path: "Tests/KeyboardSwitcherTests"
+            name: "ShiftHappensTests",
+            dependencies: ["ShiftHappensCore"],
+            path: "Tests/ShiftHappensTests"
         )
     ]
 )

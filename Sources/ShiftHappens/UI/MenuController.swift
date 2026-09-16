@@ -1,6 +1,6 @@
 import AppKit
 import SwiftUI
-import KeyboardSwitcherCore
+import ShiftHappensCore
 
 /// Owns the Settings and About windows, hosting SwiftUI views in AppKit windows
 /// (spec §4: avoids SwiftUI window-lifecycle quirks inside MenuBarExtra-only apps).
@@ -29,7 +29,7 @@ final class MenuController {
                 defer: false
             )
             window.isReleasedWhenClosed = false
-            window.title = "Keyboard Switcher — Settings"
+            window.title = "Shift Happens — Settings"
             window.center()
             settingsWindow = window
         }
@@ -52,7 +52,7 @@ final class MenuController {
                 defer: false
             )
             window.isReleasedWhenClosed = false
-            window.title = "About Keyboard Switcher"
+            window.title = "About Shift Happens"
             window.contentView = NSHostingView(rootView: AboutView())
             window.center()
             aboutWindow = window

@@ -4,7 +4,7 @@ Guidance for working on this repository.
 
 ## What this is
 
-**keyboard-switcher** — a macOS menu bar utility that fixes text typed in the wrong keyboard layout.
+**Shift Happens** (repo and bundle: `shift-happens`; formerly keyboard-switcher) — a macOS menu bar utility that fixes text typed in the wrong keyboard layout.
 
 The user types text while the wrong input source is active (e.g., Ukrainian words typed on an English layout produce `ghbdtn` instead of `привет`). They select the text, press a hotkey, and the utility:
 

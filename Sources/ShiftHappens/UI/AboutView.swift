@@ -6,7 +6,7 @@ struct AboutView: View {
             Image(systemName: "keyboard")
                 .font(.system(size: 40))
                 .foregroundStyle(.tint)
-            Text("Keyboard Switcher")
+            Text("Shift Happens")
                 .font(.title2.bold())
             Text(versionLine)
                 .font(.caption)

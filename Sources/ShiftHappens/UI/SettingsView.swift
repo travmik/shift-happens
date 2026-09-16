@@ -1,7 +1,7 @@
 import AppKit
 import ApplicationServices
 import SwiftUI
-import KeyboardSwitcherCore
+import ShiftHappensCore
 
 struct SettingsView: View {
     let store: SettingsStore

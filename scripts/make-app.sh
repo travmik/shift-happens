@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 
 swift build -c release
 
-APP="build/KeyboardSwitcher.app"
+APP="build/ShiftHappens.app"
 # Stable self-signed identity: keeps the macOS Accessibility (TCC) grant valid
 # across rebuilds (ad-hoc signatures change cdhash and break the grant every time).
 # The identity must exist in the login keychain; override with KS_SIGN_IDENTITY="-"
@@ -18,10 +18,10 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleName</key><string>KeyboardSwitcher</string>
-    <key>CFBundleDisplayName</key><string>Keyboard Switcher</string>
-    <key>CFBundleIdentifier</key><string>com.travmik.keyboard-switcher</string>
-    <key>CFBundleExecutable</key><string>KeyboardSwitcher</string>
+    <key>CFBundleName</key><string>ShiftHappens</string>
+    <key>CFBundleDisplayName</key><string>Shift Happens</string>
+    <key>CFBundleIdentifier</key><string>com.travmik.shift-happens</string>
+    <key>CFBundleExecutable</key><string>ShiftHappens</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>0.1.0</string>
     <key>CFBundleVersion</key><string>1</string>
@@ -32,6 +32,6 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
-cp .build/release/KeyboardSwitcher "$APP/Contents/MacOS/KeyboardSwitcher"
+cp .build/release/ShiftHappens "$APP/Contents/MacOS/ShiftHappens"
 codesign --force --sign "$SIGN_IDENTITY" "$APP"
 echo "Built $APP"
