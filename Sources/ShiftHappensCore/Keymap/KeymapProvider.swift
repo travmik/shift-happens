@@ -2,7 +2,7 @@ import Carbon.HIToolbox
 import Foundation
 
 /// Extracts a layout's character tables via UCKeyTranslate and caches them per
-/// input source ID (spec §3.3). Modifier states: 0 = base, 1 = shift.
+/// input source ID (spec §3.3). Modifier states: 0 = base, 2 = shift (shiftKey >> 8).
 public final class KeymapProvider: KeymapProviding {
 
     private var cache: [String: Keymap] = [:]
@@ -32,7 +32,10 @@ public final class KeymapProvider: KeymapProviding {
             if let char = translateKey(data: layoutData, keyCode: UInt16(keyCode), modifierState: 0) {
                 base[keyCode] = char
             }
-            if let char = translateKey(data: layoutData, keyCode: UInt16(keyCode), modifierState: 1) {
+            // Shift lives at modifier state 2 (= shiftKey >> 8), not 1: state 1 is a
+            // layout-specific layer (on Ukrainian-PC it holds the Latin base), and
+            // using it silently dropped every capital letter.
+            if let char = translateKey(data: layoutData, keyCode: UInt16(keyCode), modifierState: 2) {
                 shift[keyCode] = char
             }
         }

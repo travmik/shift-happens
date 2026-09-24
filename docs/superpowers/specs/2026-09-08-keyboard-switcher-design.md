@@ -70,7 +70,7 @@ Replacement happens before the switch: the AX write and the ⌘V paste are layou
 
 ### 3.3 KeymapProvider (UCKeyTranslate extraction)
 
-- For a given `TISInputSource`: get `kTISPropertyUnicodeKeyLayoutData`, call `UCKeyTranslate` with `kUCKeyActionDisplay` for modifiers = 0 (base) and `shiftKey` (shift layer), over virtual key codes 0…127.
+- For a given `TISInputSource`: get `kTISPropertyUnicodeKeyLayoutData`, call `UCKeyTranslate` with `kUCKeyActionDisplay` at modifier states 0 (base) and 2 (shift — `shiftKey >> 8`; state 1 is a layout-specific layer: on Ukrainian-PC it holds the Latin base, which silently dropped every capital until 2026-09-24), over virtual key codes 0…127.
 - Cache by layout ID (`kTISPropertyInputSourceID`).
 - Skip non-keyboard sources (layouts only — filter by type `kTISTypeKeyboardLayout`), so input methods don't enter the cycle list.
 
