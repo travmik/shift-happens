@@ -2,61 +2,67 @@ import AppKit
 import SwiftUI
 import ShiftHappensCore
 
-/// Owns the Settings and About windows, hosting SwiftUI views in AppKit windows
+/// Owns the Settings window, hosting the SwiftUI carded view in an AppKit window
 /// (spec §4: avoids SwiftUI window-lifecycle quirks inside MenuBarExtra-only apps).
+/// About lives inside Settings as a card, so this is the only window.
 @MainActor
 final class MenuController {
     private var settingsStore: SettingsStore?
     private var inputSourceService: InputSourceServicing?
+    private var hotkeyManager: HotkeyManager?
+    private var loginItemService: LoginItemServicing?
     private var settingsWindow: NSWindow?
-    private var aboutWindow: NSWindow?
 
-    func configure(settings: SettingsStore, inputSource: InputSourceServicing) {
+    func configure(settings: SettingsStore,
+                   inputSource: InputSourceServicing,
+                   hotkey: HotkeyManager,
+                   loginItem: LoginItemServicing) {
         settingsStore = settings
         inputSourceService = inputSource
+        hotkeyManager = hotkey
+        loginItemService = loginItem
     }
 
     func showSettings() {
-        guard let settingsStore, let inputSourceService else { return }
+        guard let settingsStore, let inputSourceService, let hotkeyManager, let loginItemService else { return }
         let window: NSWindow
         if let existing = settingsWindow {
             window = existing
         } else {
             window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 420, height: 380),
+                contentRect: NSRect(x: 0, y: 0, width: 354, height: 320),
                 styleMask: [.titled, .closable],
                 backing: .buffered,
                 defer: false
             )
             window.isReleasedWhenClosed = false
-            window.title = "Shift Happens — Settings"
+            window.title = "Shift Happens"
             window.center()
             settingsWindow = window
         }
-        window.contentView = NSHostingView(
-            rootView: SettingsView(store: settingsStore, inputSource: inputSourceService)
-        )
-        NSApp.activate(ignoringOtherApps: true)
-        window.makeKeyAndOrderFront(nil)
-    }
-
-    func showAbout() {
-        let window: NSWindow
-        if let existing = aboutWindow {
-            window = existing
-        } else {
-            window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 300, height: 180),
-                styleMask: [.titled, .closable],
-                backing: .buffered,
-                defer: false
+        let hosting = NSHostingView(
+            rootView: SettingsView(
+                store: settingsStore,
+                inputSource: inputSourceService,
+                hotkey: hotkeyManager,
+                loginItem: loginItemService,
+                onLayoutChange: { [weak window] in
+                    // Deferred so the SwiftUI layout pass has run; degenerate sizes
+                    // (view not laid out yet) are ignored.
+                    DispatchQueue.main.async {
+                        guard let window,
+                              let hosting = window.contentView as? NSHostingView<SettingsView> else { return }
+                        hosting.layoutSubtreeIfNeeded()
+                        var size = hosting.fittingSize
+                        size.width = max(size.width, 330)
+                        size.height = max(size.height, 260)
+                        window.setContentSize(size)
+                    }
+                }
             )
-            window.isReleasedWhenClosed = false
-            window.title = "About Shift Happens"
-            window.contentView = NSHostingView(rootView: AboutView())
-            window.center()
-            aboutWindow = window
-        }
+        )
+        hosting.sizingOptions = [.intrinsicContentSize]
+        window.contentView = hosting
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
     }

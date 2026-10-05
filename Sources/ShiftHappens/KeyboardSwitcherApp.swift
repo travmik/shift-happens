@@ -8,7 +8,6 @@ struct ShiftHappensApp: App {
     var body: some Scene {
         MenuBarExtra("Shift Happens", systemImage: "keyboard") {
             Button("Settings…") { appDelegate.showSettings() }
-            Button("About Shift Happens") { appDelegate.showAbout() }
             Divider()
             Button("Quit Shift Happens") { NSApp.terminate(nil) }
         }
@@ -27,6 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let inputSource = InputSourceService()
         let settings = SettingsStore()
+        let loginItem = LoginItemService()
         let textSelection = TextSelectionService(shouldRestoreClipboard: {
             settings.load().restoreClipboardAfterFix
         })
@@ -37,9 +37,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             keymaps: keymaps,
             settings: settings
         )
-        menuController.configure(settings: settings, inputSource: inputSource)
 
-        let hotkey = HotkeyManager { [weak orchestrator] in
+        let hotkey = HotkeyManager(config: settings.load().hotkey ?? .standard) { [weak orchestrator] in
             orchestrator?.switchAndTranslate()
         }
         let installed = hotkey.install()
@@ -47,8 +46,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             logError("failed to register hotkey option-command-K")
         }
         hotkeyManager = hotkey
+        menuController.configure(settings: settings, inputSource: inputSource, hotkey: hotkey, loginItem: loginItem)
     }
 
     func showSettings() { menuController.showSettings() }
-    func showAbout() { menuController.showAbout() }
 }

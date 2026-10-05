@@ -9,18 +9,63 @@ private final class HotkeyContext {
     }
 }
 
-/// Registers the global ⌥⌘K hotkey via Carbon RegisterEventHotKey (spec §3.5).
+/// Registers a global hotkey via Carbon RegisterEventHotKey (spec §3.5),
+/// supports live rebinding from Settings, and reports combination availability.
 public final class HotkeyManager {
 
     private var hotKeyRef: EventHotKeyRef?
     private var eventHandlerRef: EventHandlerRef?
+    private var config: HotkeyConfig
     private let context: HotkeyContext
 
-    public init(handler: @escaping () -> Void) {
+    private static let signature = OSType(0x4B_53_57_31) /* "KSW1" */
+
+    public init(config: HotkeyConfig = .standard, handler: @escaping () -> Void) {
+        self.config = config
         context = HotkeyContext(handler: handler)
     }
 
     public func install() -> Bool {
+        register()
+    }
+
+    /// Rebinds to a new combination; restores the previous one if registration fails.
+    @discardableResult
+    public func rebind(to newConfig: HotkeyConfig) -> Bool {
+        uninstall()
+        let previous = config
+        config = newConfig
+        if register() {
+            return true
+        }
+        config = previous
+        _ = register()
+        return false
+    }
+
+    /// Temporarily unregisters the hotkey — used while recording a new
+    /// combination, because a registered Carbon hotkey swallows its keystroke
+    /// system-wide and the recorder would never see it.
+    public func suspend() {
+        uninstall()
+    }
+
+    public func resume() {
+        _ = register()
+    }
+
+    public func uninstall() {
+        if let hotKeyRef {
+            UnregisterEventHotKey(hotKeyRef)
+        }
+        if let eventHandlerRef {
+            RemoveEventHandler(eventHandlerRef)
+        }
+        hotKeyRef = nil
+        eventHandlerRef = nil
+    }
+
+    private func register() -> Bool {
         var eventType = EventTypeSpec(
             eventClass: OSType(kEventClassKeyboard),
             eventKind: UInt32(kEventHotKeyPressed)
@@ -36,10 +81,10 @@ public final class HotkeyManager {
         )
         guard installStatus == noErr else { return false }
 
-        let hotKeyID = EventHotKeyID(signature: OSType(0x4B_53_57_31) /* "KSW1" */, id: 1)
+        var hotKeyID = EventHotKeyID(signature: Self.signature, id: 1)
         let registerStatus = RegisterEventHotKey(
-            UInt32(kVK_ANSI_K),
-            UInt32(optionKey | cmdKey),
+            config.keyCode,
+            config.modifiers,
             hotKeyID,
             GetApplicationEventTarget(),
             0,
@@ -48,19 +93,9 @@ public final class HotkeyManager {
         return registerStatus == noErr
     }
 
-    public func uninstall() {
-        if let hotKeyRef {
-            UnregisterEventHotKey(hotKeyRef)
-        }
-        if let eventHandlerRef {
-            RemoveEventHandler(eventHandlerRef)
-        }
-        hotKeyRef = nil
-        eventHandlerRef = nil
-    }
-
     private static let hotkeyCallback: EventHandlerUPP = { _, event, userData in
         guard let event, let userData else { return noErr }
+        let context = unsafeBitCast(userData, to: HotkeyContext.self)
         var hotKeyID = EventHotKeyID()
         _ = GetEventParameter(
             event,
@@ -71,7 +106,7 @@ public final class HotkeyManager {
             nil,
             &hotKeyID
         )
-        unsafeBitCast(userData, to: HotkeyContext.self).handler()
+        context.handler()
         return noErr
     }
 }

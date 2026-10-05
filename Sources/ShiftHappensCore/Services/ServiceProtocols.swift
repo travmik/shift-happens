@@ -26,3 +26,8 @@ public protocol TextSelectionServicing {
 public protocol KeymapProviding {
     func keymap(forSourceID id: String) -> Keymap?
 }
+
+public protocol LoginItemServicing {
+    var isEnabled: Bool { get }
+    func setEnabled(_ enabled: Bool) throws
+}

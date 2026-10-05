@@ -52,4 +52,20 @@ final class SettingsStoreTests: XCTestCase {
         store.save(settings)
         XCTAssertEqual(store.load(), settings)
     }
+
+    func test_hotkeyConfig_roundTrip() {
+        let store = SettingsStore(defaults: defaults)
+        let settings = AppSettings(
+            enabledSourceIDs: ["a"],
+            hotkey: HotkeyConfig(keyCode: 15, modifiers: 0x400 | 0x800) // ⌃⌥
+        )
+        store.save(settings)
+        XCTAssertEqual(store.load(), settings)
+    }
+
+    func test_defaultHotkeyIsStandard() {
+        XCTAssertEqual(AppSettings().hotkey, nil)
+        XCTAssertEqual(HotkeyConfig.standard.keySymbol, "K")
+        XCTAssertEqual(HotkeyConfig.standard.modifierSymbols, ["⌥", "⌘"])
+    }
 }
