@@ -28,10 +28,14 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
     <key>NSHighResolutionCapable</key><true/>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
 </dict>
 </plist>
 PLIST
 
 cp .build/release/ShiftHappens "$APP/Contents/MacOS/ShiftHappens"
+mkdir -p "$APP/Contents/Resources"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+cp Resources/MenuBarIconTemplate.png "$APP/Contents/Resources/MenuBarIconTemplate.png"
 codesign --force --sign "$SIGN_IDENTITY" "$APP"
 echo "Built $APP"

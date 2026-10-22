@@ -6,13 +6,30 @@ struct ShiftHappensApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("Shift Happens", systemImage: "keyboard") {
+        MenuBarExtra {
             Button("Settings…") { appDelegate.showSettings() }
             Divider()
             Button("Quit Shift Happens") { NSApp.terminate(nil) }
+        } label: {
+            if let image = Self.menuBarImage {
+                Image(nsImage: image)
+            } else {
+                Image(systemName: "keyboard")
+            }
         }
         .menuBarExtraStyle(.menu)
     }
+
+    /// App icon as a menu bar template image — the system tints it for dark
+    /// and light menu bars. Falls back to the SF Symbol when the bundle has no
+    /// resources (e.g. `swift run`).
+    private static let menuBarImage: NSImage? = {
+        guard let url = Bundle.main.url(forResource: "MenuBarIconTemplate", withExtension: "png"),
+              let image = NSImage(contentsOf: url) else { return nil }
+        image.isTemplate = true
+        image.size = NSSize(width: 18, height: 18)
+        return image
+    }()
 }
 
 @MainActor
