@@ -15,6 +15,24 @@ Typed Ukrainian words while the English layout was active — got `ghbdtn` inste
 - Language setup in settings, or taken from system input sources
 - Support for more than two input sources (hotkey cycles through them)
 
+## Development workflow
+
+Development is spec-driven and AI-agent-friendly. Non-trivial features go through
+**idea → brainstorm → written spec → spec review → plan → TDD implementation →
+verification**. Agent instructions live in [AGENTS.md](AGENTS.md); technical
+quirks in [CLAUDE.md](CLAUDE.md). Notable changes are recorded in
+[CHANGELOG.md](CHANGELOG.md); architectural decisions in [docs/adr/](docs/adr/).
+
+## Documentation
+
+| What | Where |
+|---|---|
+| Product concept (source of truth) | [docs/concept.md](docs/concept.md) |
+| Design specs | `docs/superpowers/specs/` |
+| Implementation plans | `docs/superpowers/plans/` |
+| Architectural decision records | [docs/adr/](docs/adr/) |
+| Changelog | [CHANGELOG.md](CHANGELOG.md) |
+
 ## Build
 
 Swift 5.9, macOS 14+ (arm64), SwiftPM:
