@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Project documentation for spec-driven development: `AGENTS.md` (agent
   instructions), architecture decision records (`docs/adr/`), and this
   changelog.
+- Homebrew cask distribution via the personal tap
+  `travmik/homebrew-tap` (`brew install --cask travmik/tap/shift-happens`) —
+  tag-driven release pipeline: CI builds an ad-hoc signed tar.gz, publishes a
+  GitHub Release, and updates the tap cask automatically.
 
 ## [0.1.0] — Increment 1
 

@@ -39,3 +39,4 @@ What becomes easier, harder, or newly required.
 | ADR | Title | Status |
 |---|---|---|
 | [0001](0001-spec-driven-development-workflow.md) | Spec-driven development workflow and documentation layout | Accepted |
+| [0002](0002-unsigned-tap-distribution.md) | Unsigned Homebrew tap distribution | Accepted |

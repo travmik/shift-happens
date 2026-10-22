@@ -87,7 +87,7 @@ of the surrounding code. Always run `swift test` before claiming work is done.
 - **Never write the selection via AX** — replacement pastes (single writer); AX is read-only here.
 - ChatGPT ignores all synthetic key events — replace via its Edit→Paste menu item (`AXUIElementPerformAction`).
 - Synthetic keystrokes must be posted as a full physical stream (⌘ flagsChanged down, key down, key up, ⌘ flagsChanged up).
-- `scripts/make-app.sh` signs with the stable `keyboard-switcher-dev` identity — never go back to ad-hoc `--sign -`, it invalidates the Accessibility grant.
+- `scripts/make-app.sh` signs local builds with the stable `keyboard-switcher-dev` identity — never go back to ad-hoc `--sign -` **for local dev builds**, it invalidates the Accessibility grant. Release builds (CI) are ad-hoc by design and packed as tar.gz to avoid Gatekeeper — see [ADR 0002](docs/adr/0002-unsigned-tap-distribution.md).
 
 See [CLAUDE.md](CLAUDE.md) for the full rationale behind each quirk.
 

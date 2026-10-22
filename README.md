@@ -33,6 +33,29 @@ quirks in [CLAUDE.md](CLAUDE.md). Notable changes are recorded in
 | Architectural decision records | [docs/adr/](docs/adr/) |
 | Changelog | [CHANGELOG.md](CHANGELOG.md) |
 
+## Install
+
+Via [Homebrew](https://brew.sh) (Apple Silicon, macOS 14+):
+
+```bash
+brew tap travmik/tap https://github.com/travmik/homebrew-tap
+brew install --cask travmik/tap/shift-happens
+```
+
+After installing (and again after every `brew upgrade`), grant **Accessibility**
+permission: System Settings → Privacy & Security → Accessibility →
+ShiftHappens.app. The app is unsigned by design — see
+[ADR 0002](docs/adr/0002-unsigned-tap-distribution.md) for the reasoning.
+
+### Releasing
+
+The release pipeline is fully automated: push a version tag and GitHub Actions
+builds the app, publishes a GitHub Release, and updates the Homebrew tap:
+
+```bash
+git tag v0.2.0 && git push origin v0.2.0
+```
+
 ## Build
 
 Swift 5.9, macOS 14+ (arm64), SwiftPM:
