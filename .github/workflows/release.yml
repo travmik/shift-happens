@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build and hash exactly once — gzip embeds an mtime, so a second run
+      # of the script would produce different bytes and a different sha256
+      # than the tarball attached to the release.
+      - name: Build release artifact
+        run: |
+          OUT="$(./scripts/make-release-artifact.sh "$GITHUB_REF_NAME")"
+          ARTIFACT="$(echo "$OUT" | sed -n 's/^artifact=//p')"
+          SHA256="$(echo "$OUT" | sed -n 's/^sha256=//p')"
+          {
+            echo "ARTIFACT=$ARTIFACT"
+            echo "SHA256=$SHA256"
+            echo "VERSION=${GITHUB_REF_NAME#v}"
+          } >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "$ARTIFACT" --generate-notes --verify-tag
+
+      - name: Update homebrew tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          if [ -z "$HOMEBREW_TAP_TOKEN" ]; then
+            echo "HOMEBREW_TAP_TOKEN secret is not set — skipping tap update" >&2
+            exit 1
+          fi
+          git clone "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/travmik/homebrew-tap.git"
+          cd homebrew-tap
+          ruby ../scripts/update-homebrew-cask.rb Casks/shift-happens.rb "$VERSION" "$SHA256" travmik/shift-happens
+          git config user.name "shift-happens-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add Casks/shift-happens.rb
+          git commit -m "shift-happens v$VERSION"
+          git push
