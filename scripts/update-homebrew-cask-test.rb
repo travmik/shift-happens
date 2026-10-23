@@ -23,7 +23,7 @@ class UpdateHomebrewCaskTest < Minitest::Test
       assert_includes cask, 'cask "shift-happens"'
       assert_includes cask, 'version "0.1.0"'
       assert_includes cask, %Q{sha256 "#{OLD_HASH}"}
-      assert_includes cask, 'depends_on macos: ">= :sonoma"'
+      assert_includes cask, 'depends_on macos: :sonoma'
       assert_includes cask, 'depends_on arch: :arm64'
       assert_includes cask,
                       'url "https://github.com/travmik/shift-happens/releases/download/v0.1.0/ShiftHappens-v0.1.0-arm64.tar.gz"'
