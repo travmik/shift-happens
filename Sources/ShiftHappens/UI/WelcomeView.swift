@@ -201,6 +201,7 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
 
         let hosting = NSHostingView(rootView: WelcomeView(
             status: status,
+            sandboxIntended: sandboxIntended,
             sandboxDemo: sandboxDemo,
             onStart: { [weak window] in window?.close() }
         ))
