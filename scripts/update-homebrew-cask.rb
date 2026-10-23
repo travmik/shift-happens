@@ -32,7 +32,7 @@ cask "#{CASK_TOKEN}" do
   desc "Menu bar utility that fixes text typed in the wrong keyboard layout"
   homepage "https://github.com/%<slug>s"
 
-  depends_on mac: ">= :sonoma"
+  depends_on macos: ">= :sonoma"
   depends_on arch: :arm64
 
   app "#{APP_NAME}"
