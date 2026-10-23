@@ -188,6 +188,18 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
         window.contentView = hosting
         self.window = window
 
+        // Deferred so the SwiftUI layout pass has run; the window then adopts
+        // the content's natural size (same pattern as the Settings window).
+        DispatchQueue.main.async { [weak window] in
+            guard let window,
+                  let hosting = window.contentView as? NSHostingView<WelcomeView> else { return }
+            hosting.layoutSubtreeIfNeeded()
+            var size = hosting.fittingSize
+            size.width = max(size.width, 300)
+            size.height = max(size.height, 120)
+            window.setContentSize(size)
+        }
+
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
     }
