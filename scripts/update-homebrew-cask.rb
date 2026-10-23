@@ -25,12 +25,15 @@ CAVEAT_TEXT
 TEMPLATE = <<~RUBY
 cask "#{CASK_TOKEN}" do
   version "%<version>s"
-  sha256 arm64: "%<sha256>s"
+  sha256 "%<sha256>s"
 
   url "https://github.com/%<slug>s/releases/download/v%<version>s/#{ARTIFACT}"
   name "Shift Happens"
   desc "Menu bar utility that fixes text typed in the wrong keyboard layout"
   homepage "https://github.com/%<slug>s"
+
+  depends_on mac: ">= :sonoma"
+  depends_on arch: :arm64
 
   app "#{APP_NAME}"
 
@@ -64,7 +67,7 @@ content = File.read(cask_path)
 die "#{cask_path} is not the #{CASK_TOKEN} cask" unless content.include?("cask \"#{CASK_TOKEN}\"")
 
 content.sub!(%r{version ".*"}, format('version "%s"', version))
-content.sub!(%r{sha256 arm64: ".*"}, format('sha256 arm64: "%s"', sha256))
+content.sub!(%r{sha256 ".*"}, format('sha256 "%s"', sha256))
 content.sub!(%r{url ".*"}, format('url "https://github.com/%s/releases/download/v%s/%s"',
                                   slug, version, format(ARTIFACT, version: version)))
 File.write(cask_path, content)

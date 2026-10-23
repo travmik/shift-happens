@@ -22,7 +22,9 @@ class UpdateHomebrewCaskTest < Minitest::Test
       cask = File.read(path)
       assert_includes cask, 'cask "shift-happens"'
       assert_includes cask, 'version "0.1.0"'
-      assert_includes cask, %Q{sha256 arm64: "#{OLD_HASH}"}
+      assert_includes cask, %Q{sha256 "#{OLD_HASH}"}
+      assert_includes cask, 'depends_on mac: ">= :sonoma"'
+      assert_includes cask, 'depends_on arch: :arm64'
       assert_includes cask,
                       'url "https://github.com/travmik/shift-happens/releases/download/v0.1.0/ShiftHappens-v0.1.0-arm64.tar.gz"'
       assert_includes cask, 'app "ShiftHappens.app"'
@@ -41,7 +43,7 @@ class UpdateHomebrewCaskTest < Minitest::Test
 
       assert_includes after, 'version "0.2.0"'
       refute_includes after, 'version "0.0.1"'
-      assert_includes after, %Q{sha256 arm64: "#{NEW_HASH}"}
+      assert_includes after, %Q{sha256 "#{NEW_HASH}"}
       assert_includes after, 'ShiftHappens-v0.2.0-arm64.tar.gz'
       refute_includes after, 'ShiftHappens-v0.0.1-arm64.tar.gz'
       # untouched lines
