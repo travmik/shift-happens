@@ -157,8 +157,8 @@ repo.
 
 1. Tag `v0.1.0` → CI produces a GitHub Release with the arm64 tar.gz
 2. Tap cask updated automatically; `brew install --cask travmik/tap/shift-happens`
-   installs the app into /Applications with **no Gatekeeper prompt** (tar.gz
-   carries no quarantine xattr)
+   installs the app into /Applications with **no Gatekeeper prompt** (verified:
+   brew's own quarantine flag variant does not trigger the prompt — ADR 0002)
 3. App launches, shows the Accessibility "not granted" state, works after the
    user grants it
 4. Bump-tag a test version → `brew upgrade` installs it (accepting the
