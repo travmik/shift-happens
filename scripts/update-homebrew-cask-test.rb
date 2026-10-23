@@ -29,6 +29,8 @@ class UpdateHomebrewCaskTest < Minitest::Test
                       'url "https://github.com/travmik/shift-happens/releases/download/v0.1.0/ShiftHappens-v0.1.0-arm64.tar.gz"'
       assert_includes cask, 'app "ShiftHappens.app"'
       assert_includes cask, 'Grant Accessibility permission after installing'
+      assert_includes cask, 'Open Anyway'
+      assert_includes cask, 'xattr -d com.apple.quarantine'
     end
   end
 
@@ -51,6 +53,7 @@ class UpdateHomebrewCaskTest < Minitest::Test
       assert_equal before.lines.grep(/caveats/), after.lines.grep(/caveats/)
       assert_equal before.lines.grep(/Grant Accessibility/),
                    after.lines.grep(/Grant Accessibility/)
+      assert_equal before.lines.grep(/Open Anyway/), after.lines.grep(/Open Anyway/)
     end
   end
 

@@ -15,8 +15,12 @@ ARTIFACT = 'ShiftHappens-v%<version>s-arm64.tar.gz'
 CAVEAT = <<~CAVEAT_TEXT
   Grant Accessibility permission after installing:
   System Settings → Privacy & Security → Accessibility → ShiftHappens.app.
-  Re-grant after each update: the app is unsigned, so macOS ties the
-  permission to the exact build.
+
+  First launch from Finder is blocked by Gatekeeper (the app is unsigned).
+  To allow it: System Settings → Privacy & Security → "Open Anyway", or run
+  `xattr -d com.apple.quarantine /Applications/ShiftHappens.app`.
+  Both steps repeat after each update: the app is unsigned, so macOS ties
+  the permission and the block to the exact build.
 CAVEAT_TEXT
 
 # Note: template lines start at column 0 so the generated cask body is
