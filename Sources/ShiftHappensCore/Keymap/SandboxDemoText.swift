@@ -7,12 +7,17 @@ import Foundation
 /// hotkey genuinely fixes it in place.
 public enum SandboxDemoText {
 
-    /// - Returns: `text` remapped from the active layout's keymap into the
-    ///   next enabled layout's keymap, or `nil` when a keymap is missing or
-    ///   the translation is a no-op (unusable demo, e.g. identical layouts).
+    /// - Returns: `text` (expressed in `next`'s character set — e.g. Latin
+    ///   "shift happens" for the ABC layout) rendered through the `active`
+    ///   layout's keymap: what the user would have gotten typing those keys
+    ///   with the wrong layout on. The Orchestrator's fix path
+    ///   (`translate(selected, active → next)`) then maps it back exactly.
+    ///   Returns `nil` when a keymap is missing, when `next` cannot produce
+    ///   `text`'s characters, or when the translation is a no-op (unusable
+    ///   demo, e.g. identical layouts).
     public static func generate(text: String, active: Keymap?, next: Keymap?) -> String? {
         guard let active, let next else { return nil }
-        let result = KeymapTranslator.translate(text, source: active, target: next)
+        let result = KeymapTranslator.translate(text, source: next, target: active)
         return result == text ? nil : result
     }
 }

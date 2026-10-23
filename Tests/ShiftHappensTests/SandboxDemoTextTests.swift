@@ -15,19 +15,28 @@ final class SandboxDemoTextTests: XCTestCase {
         return Keymap(base: base, shift: [:])
     }
 
-    func test_generate_mapsTextThroughLayouts() {
+    func test_generate_rendersIntendedTextThroughActiveLayout() {
+        // Intended "shift happens" (ABC charset), active layout is Cyrillic:
+        // the sandbox shows what the user would have gotten typing those keys.
         let result = SandboxDemoText.generate(text: "shift happens",
-                                              active: latinKeymap(),
-                                              next: cyrillicKeymap())
+                                              active: cyrillicKeymap(),
+                                              next: latinKeymap())
         XCTAssertEqual(result, "ыршае рфззуты")
     }
 
     func test_generate_returnsNilWhenActiveKeymapMissing() {
-        XCTAssertNil(SandboxDemoText.generate(text: "shift happens", active: nil, next: cyrillicKeymap()))
+        XCTAssertNil(SandboxDemoText.generate(text: "shift happens", active: nil, next: latinKeymap()))
     }
 
     func test_generate_returnsNilWhenNextKeymapMissing() {
-        XCTAssertNil(SandboxDemoText.generate(text: "shift happens", active: latinKeymap(), next: nil))
+        XCTAssertNil(SandboxDemoText.generate(text: "shift happens", active: cyrillicKeymap(), next: nil))
+    }
+
+    func test_generate_returnsNilWhenIntendedNotProducibleByNext() {
+        // Latin "shift happens" cannot come from the Cyrillic layout → no demo.
+        XCTAssertNil(SandboxDemoText.generate(text: "shift happens",
+                                              active: latinKeymap(),
+                                              next: cyrillicKeymap()))
     }
 
     func test_generate_returnsNilWhenTranslationIsNoOp() {
@@ -37,10 +46,15 @@ final class SandboxDemoTextTests: XCTestCase {
                                               next: latinKeymap()))
     }
 
-    func test_generate_mapsCyrillicToLatinForTheInverseDirection() {
-        let result = SandboxDemoText.generate(text: "ыршае рфззуты",
-                                              active: cyrillicKeymap(),
-                                              next: latinKeymap())
-        XCTAssertEqual(result, "shift happens")
+    func test_generate_sandboxFixesBackUnderOrchestratorDirection() {
+        // End-to-end invariant: hotkey = translate(selected, active → next).
+        // The sandbox text must map back to the intended string under that path.
+        let sandbox = SandboxDemoText.generate(text: "shift happens",
+                                               active: cyrillicKeymap(),
+                                               next: latinKeymap())!
+        let fixed = KeymapTranslator.translate(sandbox,
+                                               source: cyrillicKeymap(),
+                                               target: latinKeymap())
+        XCTAssertEqual(fixed, "shift happens")
     }
 }

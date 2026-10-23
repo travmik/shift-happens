@@ -37,10 +37,8 @@ struct WelcomeView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                Image(systemName: "keyboard")
-                    .font(.system(size: 26))
+                appIconImage
                     .frame(width: 44, height: 44)
-                    .background(Circle().fill(Color(nsColor: .controlBackgroundColor)))
                 Text("Shift Happens")
                     .font(.system(size: 17, weight: .semibold))
             }
@@ -96,6 +94,22 @@ struct WelcomeView: View {
         .padding(18)
         .frame(width: 300)
         .onAppear { status.startPolling() }
+    }
+
+    /// The bundled app icon (present in the .app bundle); SF Symbol fallback
+    /// for resource-less contexts like `swift run`.
+    @ViewBuilder
+    private var appIconImage: some View {
+        if let url = Bundle.main.url(forResource: "AppIcon", withExtension: "icns"),
+           let icon = NSImage(contentsOf: url) {
+            Image(nsImage: icon)
+                .resizable()
+        } else {
+            Image(systemName: "keyboard")
+                .font(.system(size: 26))
+                .frame(width: 44, height: 44)
+                .background(Circle().fill(Color(nsColor: .controlBackgroundColor)))
+        }
     }
 
     @ViewBuilder
