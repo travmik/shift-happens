@@ -39,7 +39,11 @@ the tap cask in the same run.
 
 **Anti-goals (would make this a failure)**
 
-- Users getting Gatekeeper popups or running `xattr -d` commands manually
+- Users getting Gatekeeper popups they cannot get past, or running
+  `xattr -d` commands manually *(amended during acceptance: with unsigned
+  distribution a Gatekeeper block on first Finder launch is unavoidable — the
+  accepted trade-off is a documented, one-click "Open Anyway" workaround per
+  update; eliminating it entirely requires notarization, see ADR 0002)*
 - Releases requiring manual cask edits (stale sha256 → checksum errors on
   `brew upgrade`)
 - Storing any token or secret inside this repository
@@ -157,8 +161,10 @@ repo.
 
 1. Tag `v0.1.0` → CI produces a GitHub Release with the arm64 tar.gz
 2. Tap cask updated automatically; `brew install --cask travmik/tap/shift-happens`
-   installs the app into /Applications with **no Gatekeeper prompt** (verified:
-   brew's own quarantine flag variant does not trigger the prompt — ADR 0002)
+   installs the app into /Applications. *(Accepted outcome, refined: Finder
+   first-launch IS Gatekeeper-blocked; the documented "Open Anyway" workaround
+   applies — Terminal-launched `open` skips the check, which is why an early
+   verification missed it. See ADR 0002.)*
 3. App launches, shows the Accessibility "not granted" state, works after the
    user grants it
 4. Bump-tag a test version → `brew upgrade` installs it (accepting the

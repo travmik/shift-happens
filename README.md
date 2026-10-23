@@ -42,10 +42,20 @@ brew tap travmik/tap https://github.com/travmik/homebrew-tap
 brew install --cask travmik/tap/shift-happens
 ```
 
-After installing (and again after every `brew upgrade`), grant **Accessibility**
-permission: System Settings → Privacy & Security → Accessibility →
-ShiftHappens.app. The app is unsigned by design — see
-[ADR 0002](docs/adr/0002-unsigned-tap-distribution.md) for the reasoning.
+After installing (and again after every `brew upgrade`):
+
+1. **Allow the app in Gatekeeper** — the first launch from Finder is blocked
+   ("Apple cannot check it for malicious software") because the app is
+   unsigned. Open **System Settings → Privacy & Security** and click
+   **"Open Anyway"**, or run
+   `xattr -d com.apple.quarantine /Applications/ShiftHappens.app`.
+2. **Grant Accessibility permission**: System Settings → Privacy & Security →
+   Accessibility → ShiftHappens.app.
+
+Both steps repeat after each update — the app is unsigned by design, so macOS
+ties the approval and the permission to the exact build. See
+[ADR 0002](docs/adr/0002-unsigned-tap-distribution.md) for the reasoning and
+the notarization path that would remove this friction.
 
 ### Releasing
 

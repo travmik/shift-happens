@@ -23,13 +23,15 @@ Developer account. Two constraints shape the options:
    no notarization. Distribution is a **personal tap** (`travmik/homebrew-tap`)
    with cask `shift-happens`.
 2. The release artifact is a **`.tar.gz`**, not `.zip` or `.dmg`. (Empirical
-   note, corrected during acceptance testing: Homebrew applies its own
-   quarantine xattr to installed cask artifacts regardless of archive format —
-   but with a flag variant (empty agent field) that macOS 14 does **not**
-   treat as a Gatekeeper-gated web download, so cask installs still launch
-   without a Gatekeeper prompt, which was the goal. Browser-style quarantine
-   flags do trigger the block. Not verified on macOS 15 Sequoia; the long-term
-   fix is notarization.)
+   note, refined after real-user acceptance testing on macOS 14.8.9: Homebrew
+   applies its own quarantine xattr to installed cask artifacts regardless of
+   archive format. Launching via `open` from Terminal skips the Gatekeeper
+   assessment for that quarantine flag variant — which is why an earlier
+   verification wrongly concluded "no prompt" — but **launching from Finder is
+   blocked** with the standard "Apple cannot check it" dialog. The documented
+   workaround is System Settings → Privacy & Security → "Open Anyway" (or
+   `xattr -d com.apple.quarantine`), repeated after each update. The decision
+   stands until notarization is adopted; see Alternatives.)
 3. The **Accessibility grant is granted manually by the user** after install
    (the app already handles the not-granted state) and re-granted after each
    update. This is documented in the README, the cask `caveats`, and ADR 0002.
