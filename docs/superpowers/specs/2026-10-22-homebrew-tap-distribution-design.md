@@ -1,7 +1,7 @@
 # Shift Happens — Homebrew Distribution via Personal Tap
 
 Date: 2026-10-22
-Status: draft, pending review
+Status: implemented (v0.1.0, v0.1.1)
 Source of truth for product intent: `docs/concept.md`
 
 ## 1. Intent and why

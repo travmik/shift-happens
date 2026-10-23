@@ -22,8 +22,14 @@ Developer account. Two constraints shape the options:
 1. Release builds are **ad-hoc signed** (`KS_SIGN_IDENTITY=-`); no Developer ID,
    no notarization. Distribution is a **personal tap** (`travmik/homebrew-tap`)
    with cask `shift-happens`.
-2. The release artifact is a **`.tar.gz`**, not `.zip` or `.dmg`: tar does not
-   carry the quarantine xattr, so cask installs never trigger Gatekeeper.
+2. The release artifact is a **`.tar.gz`**, not `.zip` or `.dmg`. (Empirical
+   note, corrected during acceptance testing: Homebrew applies its own
+   quarantine xattr to installed cask artifacts regardless of archive format —
+   but with a flag variant (empty agent field) that macOS 14 does **not**
+   treat as a Gatekeeper-gated web download, so cask installs still launch
+   without a Gatekeeper prompt, which was the goal. Browser-style quarantine
+   flags do trigger the block. Not verified on macOS 15 Sequoia; the long-term
+   fix is notarization.)
 3. The **Accessibility grant is granted manually by the user** after install
    (the app already handles the not-granted state) and re-granted after each
    update. This is documented in the README, the cask `caveats`, and ADR 0002.
