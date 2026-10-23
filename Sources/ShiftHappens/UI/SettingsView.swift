@@ -13,13 +13,13 @@ struct SettingsView: View {
     let inputSource: InputSourceServicing
     let hotkey: HotkeyManager
     let loginItem: LoginItemServicing
+    @ObservedObject var status: AccessibilityStatus
     var onLayoutChange: () -> Void = {}
 
     @State private var layouts: [InputSourceInfo] = []
     @State private var enabledIDs: Set<String> = []
     @State private var restoreClipboard = false
     @State private var launchAtLogin = false
-    @State private var accessibilityGranted = true
     @State private var languagesExpanded = false
     @State private var hotkeyExpanded = false
     @State private var currentHotkey: HotkeyConfig
@@ -38,11 +38,13 @@ struct SettingsView: View {
          inputSource: InputSourceServicing,
          hotkey: HotkeyManager,
          loginItem: LoginItemServicing,
+         accessibilityStatus: AccessibilityStatus,
          onLayoutChange: @escaping () -> Void = {}) {
         self.store = store
         self.inputSource = inputSource
         self.hotkey = hotkey
         self.loginItem = loginItem
+        self.status = accessibilityStatus
         self.onLayoutChange = onLayoutChange
         _currentHotkey = State(initialValue: store.load().hotkey ?? .standard)
     }
@@ -59,7 +61,13 @@ struct SettingsView: View {
         .padding(12)
         .frame(width: 330)
         .background(Color(nsColor: .windowBackgroundColor))
-        .onAppear(perform: reload)
+        .onAppear {
+            reload()
+            // Live status: the pill updates while Settings is visible (spec:
+            // welcome-onboarding — fixes the stale one-shot read).
+            status.startPolling()
+        }
+        .onDisappear { status.stopPolling() }
         .onChange(of: languagesExpanded) { _ in onLayoutChange() }
         .onChange(of: hotkeyExpanded) { _ in onLayoutChange() }
         .onChange(of: isRecording) { recording in
@@ -359,7 +367,7 @@ struct SettingsView: View {
             Label("Accessibility", systemImage: "lock.shield")
                 .font(.system(size: 12, weight: .semibold))
             Spacer()
-            if accessibilityGranted {
+            if status.granted {
                 statusPill("Granted", color: .green)
             } else {
                 Button {
@@ -490,7 +498,6 @@ struct SettingsView: View {
         enabledIDs = filtered.isEmpty ? systemIDs : Set(filtered)
         restoreClipboard = saved.restoreClipboardAfterFix
         launchAtLogin = loginItem.isEnabled
-        accessibilityGranted = AXIsProcessTrusted()
     }
 
     private func persist() {

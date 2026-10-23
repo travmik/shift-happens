@@ -27,7 +27,7 @@ final class MenuController {
     }
 
     func showSettings() {
-        guard let settingsStore, let inputSourceService, let hotkeyManager, let loginItemService else { return }
+        guard let settingsStore, let inputSourceService, let hotkeyManager, let loginItemService, let accessibilityStatus else { return }
         let window: NSWindow
         if let existing = settingsWindow {
             window = existing
@@ -49,6 +49,7 @@ final class MenuController {
                 inputSource: inputSourceService,
                 hotkey: hotkeyManager,
                 loginItem: loginItemService,
+                accessibilityStatus: accessibilityStatus,
                 onLayoutChange: { [weak window] in
                     // Deferred so the SwiftUI layout pass has run; degenerate sizes
                     // (view not laid out yet) are ignored.
