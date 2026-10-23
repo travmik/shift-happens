@@ -16,15 +16,19 @@ struct WelcomeView: View {
     static let demoOriginal = "shift happens"
 
     @ObservedObject var status: AccessibilityStatus
-    /// Wrong-layout rendering of `demoOriginal`, or nil when the user's layouts
-    /// cannot produce a usable demo (step 2 hidden).
+    /// The string the sandbox should fix into (e.g. "shift happens"); also the
+    /// step-2 completion check. Nil when no demo is available.
+    let sandboxIntended: String?
+    /// `sandboxIntended` rendered through the active layout (the mistyped text).
     let sandboxDemo: String?
     let onStart: () -> Void
 
     @State private var sandboxEdited: String = ""
 
-    init(status: AccessibilityStatus, sandboxDemo: String?, onStart: @escaping () -> Void) {
+    init(status: AccessibilityStatus, sandboxIntended: String?, sandboxDemo: String?,
+         onStart: @escaping () -> Void) {
         self.status = status
+        self.sandboxIntended = sandboxIntended
         self.sandboxDemo = sandboxDemo
         self.onStart = onStart
         _sandboxEdited = State(initialValue: sandboxDemo ?? "")
@@ -36,11 +40,13 @@ struct WelcomeView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
+            VStack(spacing: 8) {
                 appIconImage
-                    .frame(width: 44, height: 44)
+                    .frame(width: 56, height: 56)
+                    .frame(maxWidth: .infinity)
                 Text("Shift Happens")
                     .font(.system(size: 17, weight: .semibold))
+                    .frame(maxWidth: .infinity)
             }
 
             stepRow(number: "1", done: status.granted) {
@@ -68,7 +74,7 @@ struct WelcomeView: View {
                 }
             }
 
-            if let sandboxDemo {
+            if let sandboxDemo, let sandboxIntended {
                 stepRow(number: "2", done: sandboxFixed) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Try it right here")
@@ -78,7 +84,7 @@ struct WelcomeView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                sandboxBox
+                sandboxBox(intended: sandboxIntended)
             }
 
             Button {
@@ -113,7 +119,7 @@ struct WelcomeView: View {
     }
 
     @ViewBuilder
-    private var sandboxBox: some View {
+    private func sandboxBox(intended: String) -> some View {
         VStack(alignment: .leading, spacing: 5) {
             if status.granted {
                 TextField("", text: $sandboxEdited)
@@ -172,7 +178,7 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
     private var status: AccessibilityStatus?
 
-    func show(status: AccessibilityStatus, sandboxDemo: String?) {
+    func show(status: AccessibilityStatus, sandboxIntended: String?, sandboxDemo: String?) {
         self.status = status
         if let window {
             window.makeKeyAndOrderFront(nil)

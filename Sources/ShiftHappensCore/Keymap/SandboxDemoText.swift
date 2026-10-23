@@ -16,8 +16,16 @@ public enum SandboxDemoText {
     ///   `text`'s characters, or when the translation is a no-op (unusable
     ///   demo, e.g. identical layouts).
     public static func generate(text: String, active: Keymap?, next: Keymap?) -> String? {
-        guard let active, let next else { return nil }
+        guard let active, let next, isProducible(text, by: next) else { return nil }
         let result = KeymapTranslator.translate(text, source: next, target: active)
         return result == text ? nil : result
+    }
+
+    /// Every character of `text` must be a character the `keymap` can produce —
+    /// otherwise `KeymapTranslator` would pass unproducible chars through and
+    /// the "demo" would be mixed garbage.
+    private static func isProducible(_ text: String, by keymap: Keymap) -> Bool {
+        let produced = Set(keymap.base.values).union(keymap.shift.values)
+        return text.allSatisfy { produced.contains($0) }
     }
 }

@@ -39,6 +39,14 @@ final class SandboxDemoTextTests: XCTestCase {
                                               next: cyrillicKeymap()))
     }
 
+    func test_generate_returnsNilWhenOnlyPartOfTextProducibleByNext() {
+        // Mixed text: 'ы' is producible by the Cyrillic layout, 's' is not —
+        // a partial passthrough would produce garbage, so refuse.
+        XCTAssertNil(SandboxDemoText.generate(text: "sы",
+                                              active: latinKeymap(),
+                                              next: cyrillicKeymap()))
+    }
+
     func test_generate_returnsNilWhenTranslationIsNoOp() {
         // Same layout twice: every char maps to itself → unusable demo.
         XCTAssertNil(SandboxDemoText.generate(text: "shift happens",

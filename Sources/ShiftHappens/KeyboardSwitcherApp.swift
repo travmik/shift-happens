@@ -75,22 +75,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// (spec: welcome-onboarding — never nags after a granted launch).
     private func showWelcomeIfNeeded(inputSource: InputSourceService, keymaps: KeymapProvider) {
         guard !accessibilityStatus.granted else { return }
-        welcomeController.show(status: accessibilityStatus, sandboxDemo: sandboxDemoText(inputSource: inputSource, keymaps: keymaps))
+        guard let sandbox = sandboxDemoText(inputSource: inputSource, keymaps: keymaps) else {
+            welcomeController.show(status: accessibilityStatus, sandboxIntended: nil, sandboxDemo: nil)
+            return
+        }
+        welcomeController.show(status: accessibilityStatus,
+                               sandboxIntended: sandbox.intended,
+                               sandboxDemo: sandbox.demo)
     }
 
-    /// "shift happens" rendered in the next enabled layout — the exact inverse
-    /// of the fix path, so the demo text genuinely fixes itself. Nil when the
-    /// layouts cannot produce a usable demo.
-    private func sandboxDemoText(inputSource: InputSourceService, keymaps: KeymapProvider) -> String? {
+    /// Demo text for the welcome sandbox. The Orchestrator fixes text via
+    /// `translate(selected, active → next)`, so the sandbox must contain the
+    /// intended string *as the next layout produces it*. Tries candidates:
+    /// the app name (works when the next layout produces Latin), then common
+    /// Cyrillic greetings (the ghbdtn-style story) — first producible wins.
+    private func sandboxDemoText(inputSource: InputSourceService, keymaps: KeymapProvider)
+        -> (intended: String, demo: String)? {
         let layouts = inputSource.enabledLayouts()
         guard layouts.count >= 2, let currentID = inputSource.currentLayoutID(),
               let index = layouts.firstIndex(where: { $0.id == currentID }) else { return nil }
         let next = layouts[(index + 1) % layouts.count]
-        return SandboxDemoText.generate(
-            text: WelcomeView.demoOriginal,
-            active: keymaps.keymap(forSourceID: currentID),
-            next: keymaps.keymap(forSourceID: next.id)
-        )
+        guard let activeKeymap = keymaps.keymap(forSourceID: currentID),
+              let nextKeymap = keymaps.keymap(forSourceID: next.id) else { return nil }
+        for candidate in [WelcomeView.demoOriginal, "привіт", "привет"] {
+            if let demo = SandboxDemoText.generate(text: candidate,
+                                                   active: activeKeymap,
+                                                   next: nextKeymap) {
+                return (candidate, demo)
+            }
+        }
+        return nil
     }
 
     func showSettings() { menuController.showSettings() }
