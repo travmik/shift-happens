@@ -99,8 +99,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
               let currentIndex = layouts.firstIndex(where: { $0.id == currentID }) else { return nil }
         let demoText = WelcomeView.demoOriginal
 
-        guard let latinIndex = layouts.firstIndex(where: { layoutID in
-            keymaps.keymap(forSourceID: layoutID).map({ SandboxDemoText.canProduce(demoText, layout: $0) }) == true
+        guard let latinIndex = layouts.firstIndex(where: { layout in
+            keymaps.keymap(forSourceID: layout.id).map({ SandboxDemoText.canProduce(demoText, layout: $0) }) == true
         }) else { return nil } // no Latin-capable layout → no demo
 
         var activeID = currentID
