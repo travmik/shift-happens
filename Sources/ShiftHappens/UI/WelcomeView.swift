@@ -177,9 +177,14 @@ struct WelcomeView: View {
 final class WelcomeWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
     private var status: AccessibilityStatus?
+    private var restoreLayoutID: String?
+    private var inputSource: InputSourceServicing?
 
-    func show(status: AccessibilityStatus, sandboxIntended: String?, sandboxDemo: String?) {
+    func show(status: AccessibilityStatus, sandboxIntended: String?, sandboxDemo: String?,
+              restoreLayoutID: String?, inputSource: InputSourceServicing?) {
         self.status = status
+        self.restoreLayoutID = restoreLayoutID
+        self.inputSource = inputSource
         if let window {
             window.makeKeyAndOrderFront(nil)
             return
@@ -227,5 +232,12 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         status?.stopPolling()
+        // Restore the layout the demo switched away from (option 3, user's
+        // decision: the welcome forces a Latin-next layout so the sandbox can
+        // always be "shift happens").
+        if let restoreLayoutID, let inputSource {
+            _ = inputSource.selectLayout(id: restoreLayoutID)
+        }
+        restoreLayoutID = nil
     }
 }

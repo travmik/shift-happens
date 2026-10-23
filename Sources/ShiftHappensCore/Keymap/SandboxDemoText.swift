@@ -24,8 +24,14 @@ public enum SandboxDemoText {
     /// Every character of `text` must be a character the `keymap` can produce —
     /// otherwise `KeymapTranslator` would pass unproducible chars through and
     /// the "demo" would be mixed garbage.
-    private static func isProducible(_ text: String, by keymap: Keymap) -> Bool {
+    static func isProducible(_ text: String, by keymap: Keymap) -> Bool {
         let produced = Set(keymap.base.values).union(keymap.shift.values)
         return text.allSatisfy { produced.contains($0) }
+    }
+
+    /// Whether `layout` can render `text` at all (public: the welcome flow uses
+    /// it to pick a layout whose "next" can produce the demo string).
+    public static func canProduce(_ text: String, layout: Keymap) -> Bool {
+        isProducible(text, by: layout)
     }
 }

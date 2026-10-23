@@ -76,35 +76,46 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func showWelcomeIfNeeded(inputSource: InputSourceService, keymaps: KeymapProvider) {
         guard !accessibilityStatus.granted else { return }
         guard let sandbox = sandboxDemoText(inputSource: inputSource, keymaps: keymaps) else {
-            welcomeController.show(status: accessibilityStatus, sandboxIntended: nil, sandboxDemo: nil)
+            welcomeController.show(status: accessibilityStatus, sandboxIntended: nil, sandboxDemo: nil,
+                                   restoreLayoutID: nil, inputSource: nil)
             return
         }
         welcomeController.show(status: accessibilityStatus,
                                sandboxIntended: sandbox.intended,
-                               sandboxDemo: sandbox.demo)
+                               sandboxDemo: sandbox.demo,
+                               restoreLayoutID: sandbox.switchedFrom,
+                               inputSource: inputSource)
     }
 
-    /// Demo text for the welcome sandbox. The Orchestrator fixes text via
-    /// `translate(selected, active → next)`, so the sandbox must contain the
-    /// intended string *as the next layout produces it*. Tries candidates:
-    /// the app name (works when the next layout produces Latin), then common
-    /// Cyrillic greetings (the ghbdtn-style story) — first producible wins.
+    /// Demo text for the welcome sandbox: always "shift happens" (user's
+    /// decision). The Orchestrator fixes via `translate(selected, active →
+    /// next)`, so the NEXT layout must produce Latin. If it doesn't, the input
+    /// source is switched to the layout preceding a Latin one (restored when
+    /// the welcome window closes).
     private func sandboxDemoText(inputSource: InputSourceService, keymaps: KeymapProvider)
-        -> (intended: String, demo: String)? {
+        -> (intended: String, demo: String, switchedFrom: String?)? {
         let layouts = inputSource.enabledLayouts()
         guard layouts.count >= 2, let currentID = inputSource.currentLayoutID(),
-              let index = layouts.firstIndex(where: { $0.id == currentID }) else { return nil }
-        let next = layouts[(index + 1) % layouts.count]
-        guard let activeKeymap = keymaps.keymap(forSourceID: currentID),
-              let nextKeymap = keymaps.keymap(forSourceID: next.id) else { return nil }
-        for candidate in [WelcomeView.demoOriginal, "привіт", "привет"] {
-            if let demo = SandboxDemoText.generate(text: candidate,
-                                                   active: activeKeymap,
-                                                   next: nextKeymap) {
-                return (candidate, demo)
-            }
+              let currentIndex = layouts.firstIndex(where: { $0.id == currentID }) else { return nil }
+        let demoText = WelcomeView.demoOriginal
+
+        guard let latinIndex = layouts.firstIndex(where: { layoutID in
+            keymaps.keymap(forSourceID: layoutID).map({ SandboxDemoText.canProduce(demoText, layout: $0) }) == true
+        }) else { return nil } // no Latin-capable layout → no demo
+
+        var activeID = currentID
+        var switchedFrom: String? = nil
+        if layouts[(currentIndex + 1) % layouts.count].id != layouts[latinIndex].id {
+            activeID = layouts[(latinIndex - 1 + layouts.count) % layouts.count].id
+            guard inputSource.selectLayout(id: activeID) else { return nil }
+            switchedFrom = currentID
         }
-        return nil
+        guard let demo = SandboxDemoText.generate(
+            text: demoText,
+            active: keymaps.keymap(forSourceID: activeID),
+            next: keymaps.keymap(forSourceID: layouts[latinIndex].id)
+        ) else { return nil }
+        return (demoText, demo, switchedFrom)
     }
 
     func showSettings() { menuController.showSettings() }

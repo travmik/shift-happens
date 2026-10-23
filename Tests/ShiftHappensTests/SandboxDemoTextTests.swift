@@ -66,3 +66,20 @@ final class SandboxDemoTextTests: XCTestCase {
         XCTAssertEqual(fixed, "shift happens")
     }
 }
+
+final class SandboxDemoCanProduceTests: XCTestCase {
+    func test_canProduce_latinLayoutProducesLatinText() {
+        let latin = Keymap(base: [1: "s", 2: "h"], shift: [:])
+        XCTAssertTrue(SandboxDemoText.canProduce("sh", layout: latin))
+    }
+
+    func test_canProduce_cyrillicLayoutRejectsLatinText() {
+        let cyr = Keymap(base: [1: "ы", 2: "р"], shift: [:])
+        XCTAssertFalse(SandboxDemoText.canProduce("sh", layout: cyr))
+    }
+
+    func test_canProduce_shiftLayerCounts() {
+        let latin = Keymap(base: [1: "s"], shift: [1: "S"])
+        XCTAssertTrue(SandboxDemoText.canProduce("S", layout: latin))
+    }
+}
