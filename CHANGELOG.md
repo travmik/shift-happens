@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- First-run welcome window: explains why Accessibility is needed, offers the
+  system grant prompt, and includes a self-demo sandbox — "shift happens"
+  rendered in the user's other layout, which the app fixes in place when
+  selected + hotkey. Get started unlocks once Accessibility is granted.
+- Live Accessibility status: the settings pill (and welcome window) now update
+  within a second of granting instead of requiring a window reopen.
 - Project documentation for spec-driven development: `AGENTS.md` (agent
   instructions), architecture decision records (`docs/adr/`), and this
   changelog.

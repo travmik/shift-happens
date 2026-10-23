@@ -1,7 +1,7 @@
 # Shift Happens — First-Run Welcome & Live Accessibility Status
 
 Date: 2026-10-23
-Status: draft, pending review
+Status: implemented
 Parent spec: `docs/superpowers/specs/2026-10-22-homebrew-tap-distribution-design.md` (post-install UX follow-up)
 
 ## Intent and why
