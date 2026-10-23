@@ -50,7 +50,7 @@ the tap cask in the same run.
 |---|---|---|
 | Distribution channel | Personal tap first | No notability bar; official cask repo later if the project grows |
 | Signing | Ad-hoc (`--sign -`) for release builds | No Apple Developer account; see 5.1 for how we avoid Gatekeeper despite Homebrew's default quarantine |
-| Artifact | `.tar.gz` (not `.zip`, not `.dmg`) | Homebrew quarantines cask downloads by default, and macOS 15 Sequoia makes Gatekeeper hard on unnotarized apps — but tar archives don't carry the quarantine xattr, so a tar.gz artifact never triggers Gatekeeper |
+| Artifact | `.tar.gz` (not `.zip`, not `.dmg`) | Conventional and lightweight for a cask; Gatekeeper behavior of brew-installed apps is governed by brew's own quarantine flag, not the archive format (see ADR 0002's empirical note) |
 | Accessibility permission | User grants manually; documented in README and cask `desc` | App already implements the "not granted" state |
 | Release automation | CI builds, releases, **and pushes the tap update** (approach A) | Removes the only manual step; stale-cask checksum errors are the failure mode we're avoiding |
 | Architecture | arm64-only cask (`arch: :arm64`) | Matches the app's target; Intel users get a clean "unsupported" message |
@@ -75,9 +75,9 @@ the tap cask in the same run.
   `keyboard-switcher-dev` as default. CI sets `SIGN_IDENTITY=-` (ad-hoc).
 - Tar artifact created with
   `tar --exclude '.DS_Store' -czf ShiftHappens-vX.Y.Z-arm64.tar.gz -C build ShiftHappens.app`
-  — tar does not store the quarantine xattr, which is the whole point of the
-  format choice (see the decisions table). The ad-hoc code signature itself is
-  carried inside the bundle and survives fine.
+  (Gatekeeper behavior of the installed app is governed by brew's quarantine
+  flag, not the archive format — see ADR 0002's empirical note). The ad-hoc
+  code signature is carried inside the bundle and survives archiving.
 - The script (or a sibling `scripts/make-release-artifact.sh`) takes the version
   from the tag and outputs the final artifact name and sha256.
 

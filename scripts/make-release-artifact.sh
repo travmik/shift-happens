@@ -1,7 +1,9 @@
 #!/bin/bash
 # Builds the release artifact for a git tag: ad-hoc signed app bundle packed
-# into a tar.gz (tar carries no quarantine xattr, so Homebrew cask installs
-# never trigger Gatekeeper — see ADR 0002 and the distribution spec).
+# into a tar.gz. Note: Homebrew applies its own quarantine xattr to installed
+# cask artifacts regardless of archive format; empirically (macOS 14) brew's
+# quarantine flag variant does not trigger the Gatekeeper prompt — details and
+# caveats in ADR 0002.
 #
 # Usage: make-release-artifact.sh <git-tag>     e.g. v0.1.0 or v0.1.0-rc1
 # Stdout: "artifact=<path>" and "sha256=<hash>" lines for CI to parse.
