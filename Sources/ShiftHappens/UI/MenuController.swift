@@ -11,16 +11,19 @@ final class MenuController {
     private var inputSourceService: InputSourceServicing?
     private var hotkeyManager: HotkeyManager?
     private var loginItemService: LoginItemServicing?
+    private var accessibilityStatus: AccessibilityStatus?
     private var settingsWindow: NSWindow?
 
     func configure(settings: SettingsStore,
                    inputSource: InputSourceServicing,
                    hotkey: HotkeyManager,
-                   loginItem: LoginItemServicing) {
+                   loginItem: LoginItemServicing,
+                   accessibilityStatus: AccessibilityStatus) {
         settingsStore = settings
         inputSourceService = inputSource
         hotkeyManager = hotkey
         loginItemService = loginItem
+        self.accessibilityStatus = accessibilityStatus
     }
 
     func showSettings() {

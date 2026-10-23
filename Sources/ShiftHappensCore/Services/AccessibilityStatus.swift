@@ -12,6 +12,7 @@ public final class AccessibilityStatus: ObservableObject {
     private let check: () -> Bool
     private let interval: TimeInterval
     private var timer: Timer?
+    private var pollers = 0
 
     public init(check: @escaping () -> Bool = { AXIsProcessTrusted() },
                 interval: TimeInterval = 1.0) {
@@ -27,8 +28,11 @@ public final class AccessibilityStatus: ObservableObject {
         granted = check()
     }
 
-    /// Starts polling on the main run loop. Safe to call repeatedly.
+    /// Registers a polling consumer (a visible window) and starts the timer if
+    /// this is the only one. Reference-counted so several windows can share one
+    /// status object; the timer stops when the last consumer releases.
     public func startPolling() {
+        pollers += 1
         guard timer == nil else { return }
         let timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated {
@@ -38,8 +42,11 @@ public final class AccessibilityStatus: ObservableObject {
         self.timer = timer
     }
 
-    /// Stops polling. The stored value remains (last known state).
+    /// Releases a polling consumer. The timer stops when none remain; the
+    /// stored value stays (last known state).
     public func stopPolling() {
+        pollers = max(pollers - 1, 0)
+        guard pollers == 0 else { return }
         timer?.invalidate()
         timer = nil
     }
