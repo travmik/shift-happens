@@ -175,7 +175,9 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
         window.delegate = self
         window.center()
 
-        status.startPolling()
+        // Polling is retained by WelcomeView.onAppear (once) and released in
+        // windowWillClose — do not retain here, or the ref-count never reaches
+        // zero and the timer leaks past window close.
 
         let hosting = NSHostingView(rootView: WelcomeView(
             status: status,
