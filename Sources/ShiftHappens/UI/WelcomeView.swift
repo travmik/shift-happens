@@ -42,10 +42,10 @@ struct WelcomeView: View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(spacing: 8) {
                 appIconImage
-                    .frame(width: 56, height: 56)
+                    .frame(width: 80, height: 80)
                     .frame(maxWidth: .infinity)
                 Text("Shift Happens")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.system(size: 19, weight: .semibold))
                     .frame(maxWidth: .infinity)
             }
 
