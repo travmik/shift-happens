@@ -7,21 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — Homebrew distribution and first-run onboarding
+
 ### Added
 
+- Homebrew cask distribution via the personal tap
+  `travmik/homebrew-tap` (`brew install --cask travmik/tap/shift-happens`) —
+  tag-driven release pipeline: CI builds an ad-hoc signed tar.gz, publishes a
+  GitHub Release, and updates the tap cask automatically.
 - First-run welcome window: explains why Accessibility is needed, offers the
   system grant prompt, and includes a self-demo sandbox — "shift happens"
-  rendered in the user's other layout, which the app fixes in place when
+  rendered in the user's other layout (the input source is switched for the
+  demo and restored when the window closes), which the app fixes in place when
   selected + hotkey. Get started unlocks once Accessibility is granted.
 - Live Accessibility status: the settings pill (and welcome window) now update
   within a second of granting instead of requiring a window reopen.
 - Project documentation for spec-driven development: `AGENTS.md` (agent
   instructions), architecture decision records (`docs/adr/`), and this
   changelog.
-- Homebrew cask distribution via the personal tap
-  `travmik/homebrew-tap` (`brew install --cask travmik/tap/shift-happens`) —
-  tag-driven release pipeline: CI builds an ad-hoc signed tar.gz, publishes a
-  GitHub Release, and updates the tap cask automatically.
 
 ## [0.1.0] — Increment 1
 
@@ -52,5 +55,6 @@ Initial working prototype of the core concept.
 - Selection reading falls back to the clipboard when AX read fails (Electron apps)
 - Optional clipboard restore after paste (off by default) for slow-paste apps
 
-[Unreleased]: https://github.com/travmik/shift-happens/compare/2cf62f9...HEAD
+[Unreleased]: https://github.com/travmik/shift-happens/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/travmik/shift-happens/compare/v0.1.1...v0.2.0
 [0.1.0]: https://github.com/travmik/shift-happens/tree/2cf62f9808b731ffb29ba2f0ac1e10f477e40236
